@@ -29,17 +29,12 @@ class FlutterStoryView extends StatefulWidget {
   /// [ValueChanged] is called when a story item changes
   final ValueChanged<int> onPageChanged;
 
-  final VoidCallback? onMenuTapListener;
-
   final List<StoryItem> storyItems;
   // Optional caption for the story
   final Widget? caption;
 
   /// header for profile image
   final Widget? header;
-
-  /// Time when the story has been created
-  final DateTime? createdAt;
 
   /// Height of the indicator
   final double? indicatorHeight;
@@ -51,9 +46,6 @@ class FlutterStoryView extends StatefulWidget {
   final Color? indicatorValueColor;
 
   final bool? enableOnHoldHide;
-
-  // Back button on the top left
-  final bool? showBackIcon;
 
   // Menu button on the top right
   final bool? showMenuIcon;
@@ -74,15 +66,12 @@ class FlutterStoryView extends StatefulWidget {
     required this.onComplete,
     required this.onPageChanged,
     this.caption,
-    this.onMenuTapListener,
     this.header,
-    this.createdAt,
     required this.storyItems,
     this.indicatorHeight,
     this.indicatorColor,
     this.indicatorValueColor,
     this.enableOnHoldHide = true,
-    this.showBackIcon = true,
     this.showMenuIcon = true,
     this.showReplyButton = true,
     this.replyButtonText = "Reply",
@@ -332,53 +321,14 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
   _storyItem(StoryItem story) {
     return Column(
       children: [
-        AnimatedOpacity(
+        if (widget.header != null) AnimatedOpacity(
           duration: const Duration(milliseconds: 200),
           opacity: widget.enableOnHoldHide == false
               ? 1
               : !_isPaused
                   ? 1
                   : 0,
-          child: Container(
-            height: 100,
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 40),
-            color: Colors.black,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 5,
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (widget.showBackIcon != null && widget.showBackIcon!)
-                      GestureDetector(
-                        onTap: widget.onComplete,
-                        child: const Icon(
-                          Icons.arrow_back,
-                        ),
-                      ),
-                    if (widget.header != null) widget.header!,
-                    if (widget.createdAt != null)
-                      Text(
-                        DateFormat.jm().format(widget.createdAt!),
-                        style: const TextStyle(color: Colors.grey),
-                      ),
-                    if (widget.showMenuIcon != null && widget.showMenuIcon!)
-                      GestureDetector(
-                        onTap: widget.onMenuTapListener,
-                        child: const Icon(
-                          Icons.more_vert,
-                        ),
-                      )
-                  ],
-                ),
-              ],
-            ),
-          ),
+          child: widget.header!,
         ),
         Expanded(
           child: Stack(
