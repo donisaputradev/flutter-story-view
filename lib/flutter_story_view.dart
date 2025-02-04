@@ -320,144 +320,139 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
   // Creates a single story item widget
   _storyItem(StoryItem story) {
     return Stack(
-            children: [
-              Visibility(
-                visible: currentItemIndex == widget.storyItems.indexOf(story) &&
-                    story.type == StoryItemType.video &&
-                    (_videoController == null ||
-                        !_videoController!.value.isInitialized) &&
-                    _isVideoLoading,
-                child: Container(
-                  color: Colors.grey[600],
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.teal,
-                    ),
-                  ),
-                ),
+      children: [
+        Visibility(
+          visible: currentItemIndex == widget.storyItems.indexOf(story) &&
+              story.type == StoryItemType.video &&
+              (_videoController == null ||
+                  !_videoController!.value.isInitialized) &&
+              _isVideoLoading,
+          child: Container(
+            color: Colors.grey[600],
+            child: const Center(
+              child: CircularProgressIndicator(
+                color: Colors.teal,
               ),
+            ),
+          ),
+        ),
 
-              _switchStoryItemIsVideoOrImage(
-                story.url,
-                type: story.type,
-                controller: _videoController, // Pass the controller
-              ),
+        _switchStoryItemIsVideoOrImage(
+          story.url,
+          type: story.type,
+          controller: _videoController, // Pass the controller
+        ),
 
-              // Next story area
-              Align(
-                alignment: Alignment.centerRight,
-                heightFactor: 1,
-                child: GestureDetector(
-                  onTapDown: (details) {
-                    _tapDownTime = DateTime.now();
-                    _timer = Timer(const Duration(milliseconds: 200), () {
-                      _timer = null;
-                      if (_tapDownTime != null && _isVideoLoading == false) {
-                        final elapsedTime = DateTime.now()
-                            .difference(_tapDownTime!)
-                            .inMilliseconds;
-                        if (elapsedTime >= 200) {
-                          setState(() => _isPaused = true);
-                          _pauseTimer();
-                        } else {
-                          /// Do nothing if the onTapDown is tapped less than 200 milliseconds
-                        }
-                      }
-                    });
-                  },
-                  onTapCancel: () {
+        // Next story area
+        Align(
+          alignment: Alignment.centerRight,
+          heightFactor: 1,
+          child: GestureDetector(
+            onTapDown: (details) {
+              _tapDownTime = DateTime.now();
+              _timer = Timer(const Duration(milliseconds: 200), () {
+                _timer = null;
+                if (_tapDownTime != null && _isVideoLoading == false) {
+                  final elapsedTime =
+                      DateTime.now().difference(_tapDownTime!).inMilliseconds;
+                  if (elapsedTime >= 200) {
+                    setState(() => _isPaused = true);
+                    _pauseTimer();
+                  } else {
+                    /// Do nothing if the onTapDown is tapped less than 200 milliseconds
+                  }
+                }
+              });
+            },
+            onTapCancel: () {
+              _resumeTimer();
+              setState(() => _isPaused = false);
+            },
+            onTapUp: (details) {
+              if (_tapDownTime != null) {
+                final elapsedTime =
+                    DateTime.now().difference(_tapDownTime!).inMilliseconds;
+                if (elapsedTime > 200) {
+                  _resumeTimer();
+                  setState(() => _isPaused = false);
+                } else {
+                  _onTapNext();
+                }
+                _tapDownTime = null;
+              }
+            },
+          ),
+        ),
+
+        // Previous story area
+        Align(
+          alignment: Alignment.centerLeft,
+          heightFactor: 1,
+          child: SizedBox(
+            width: 70,
+            child: GestureDetector(
+              onTapDown: (details) {
+                _tapDownTime = DateTime.now();
+                _timer = Timer(const Duration(milliseconds: 200), () {
+                  _timer = null;
+                  if (_tapDownTime != null && _isVideoLoading == false) {
+                    final elapsedTime =
+                        DateTime.now().difference(_tapDownTime!).inMilliseconds;
+                    if (elapsedTime >= 200) {
+                      setState(() => _isPaused = true);
+                      _pauseTimer();
+                    } else {
+                      /// Do nothing if the onTapDown is tapped less than 200 milliseconds
+                    }
+                  }
+                });
+              },
+              onTapCancel: () {
+                _resumeTimer();
+                setState(() => _isPaused = false);
+              },
+              onTapUp: (details) {
+                if (_tapDownTime != null) {
+                  final elapsedTime =
+                      DateTime.now().difference(_tapDownTime!).inMilliseconds;
+                  if (elapsedTime > 200) {
                     _resumeTimer();
                     setState(() => _isPaused = false);
-                  },
-                  onTapUp: (details) {
-                    if (_tapDownTime != null) {
-                      final elapsedTime = DateTime.now()
-                          .difference(_tapDownTime!)
-                          .inMilliseconds;
-                      if (elapsedTime > 200) {
-                        _resumeTimer();
-                        setState(() => _isPaused = false);
-                      } else {
-                        _onTapNext();
-                      }
-                      _tapDownTime = null;
-                    }
-                  },
-                ),
-              ),
+                  } else {
+                    _onTapPrevious(); // return to previous story
+                  }
+                  _tapDownTime = null;
+                }
+              },
+            ),
+          ),
+        ),
 
-              // Previous story area
-              Align(
-                alignment: Alignment.centerLeft,
-                heightFactor: 1,
-                child: SizedBox(
-                  width: 70,
-                  child: GestureDetector(
-                    onTapDown: (details) {
-                      _tapDownTime = DateTime.now();
-                      _timer = Timer(const Duration(milliseconds: 200), () {
-                        _timer = null;
-                        if (_tapDownTime != null && _isVideoLoading == false) {
-                          final elapsedTime = DateTime.now()
-                              .difference(_tapDownTime!)
-                              .inMilliseconds;
-                          if (elapsedTime >= 200) {
-                            setState(() => _isPaused = true);
-                            _pauseTimer();
-                          } else {
-                            /// Do nothing if the onTapDown is tapped less than 200 milliseconds
-                          }
-                        }
-                      });
-                    },
-                    onTapCancel: () {
-                      _resumeTimer();
-                      setState(() => _isPaused = false);
-                    },
-                    onTapUp: (details) {
-                      if (_tapDownTime != null) {
-                        final elapsedTime = DateTime.now()
-                            .difference(_tapDownTime!)
-                            .inMilliseconds;
-                        if (elapsedTime > 200) {
-                          _resumeTimer();
-                          setState(() => _isPaused = false);
-                        } else {
-                          _onTapPrevious(); // return to previous story
-                        }
-                        _tapDownTime = null;
-                      }
-                    },
-                  ),
-                ),
-              ),
-
-              Column(
-                children: [
-                  if (widget.header != null) AnimatedOpacity(
-                    duration: const Duration(milliseconds: 200),
-                    opacity: widget.enableOnHoldHide == false
-                        ? 1
-                        : !_isPaused
-                            ? 1
-                            : 0,
-                    child: widget.header!,
-                  ),
-                  const Spacer(),
-                  if (widget.caption != null)
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: widget.enableOnHoldHide == false
-                          ? 1
-                          : !_isPaused
-                              ? 1
-                              : 0,
-                      child: widget.caption,
-                    ),
-                ]
-              ),
-            ],
-          );
+        Column(children: [
+          if (widget.header != null)
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: widget.enableOnHoldHide == false
+                  ? 1
+                  : !_isPaused
+                      ? 1
+                      : 0,
+              child: widget.header!,
+            ),
+          const Spacer(),
+          if (widget.caption != null)
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: widget.enableOnHoldHide == false
+                  ? 1
+                  : !_isPaused
+                      ? 1
+                      : 0,
+              child: widget.caption,
+            ),
+        ]),
+      ],
+    );
   }
 
   _switchStoryItemIsVideoOrImage(
