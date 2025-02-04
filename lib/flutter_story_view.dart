@@ -319,19 +319,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
 
   // Creates a single story item widget
   _storyItem(StoryItem story) {
-    return Column(
-      children: [
-        if (widget.header != null) AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          opacity: widget.enableOnHoldHide == false
-              ? 1
-              : !_isPaused
-                  ? 1
-                  : 0,
-          child: widget.header!,
-        ),
-        Expanded(
-          child: Stack(
+    return Stack(
             children: [
               Visibility(
                 visible: currentItemIndex == widget.storyItems.indexOf(story) &&
@@ -442,22 +430,34 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
                     },
                   ),
                 ),
-              )
+              ),
+
+              Column(
+                children: [
+                  if (widget.header != null) AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: widget.enableOnHoldHide == false
+                        ? 1
+                        : !_isPaused
+                            ? 1
+                            : 0,
+                    child: widget.header!,
+                  ),
+                  const Spacer(),
+                  if (widget.caption != null)
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      opacity: widget.enableOnHoldHide == false
+                          ? 1
+                          : !_isPaused
+                              ? 1
+                              : 0,
+                      child: widget.caption,
+                    ),
+                ]
+              ),
             ],
-          ),
-        ),
-        if (widget.caption != null)
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            opacity: widget.enableOnHoldHide == false
-                ? 1
-                : !_isPaused
-                    ? 1
-                    : 0,
-            child: widget.caption,
-          ),
-      ],
-    );
+          );
   }
 
   _switchStoryItemIsVideoOrImage(
