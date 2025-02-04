@@ -64,17 +64,14 @@ class _StoryIndicatorState extends State<StoryIndicator> {
       /// Add an expanded progress indicator to the list.
       indicators.add(
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              child: LinearProgressIndicator(
-                minHeight: widget.indicatorHeight ?? 2,
-                value: indicatorValue,
-                backgroundColor: widget.indicatorColor ?? Colors.grey[500],
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    widget.indicatorValueColor ?? Colors.white),
-              ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            child: LinearProgressIndicator(
+              minHeight: widget.indicatorHeight ?? 2,
+              value: indicatorValue,
+              backgroundColor: widget.indicatorColor ?? Colors.grey[500],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  widget.indicatorValueColor ?? Colors.white),
             ),
           ),
         ),
@@ -85,6 +82,7 @@ class _StoryIndicatorState extends State<StoryIndicator> {
     return Padding(
       padding: widget.indicatorPadding!,
       child: Row(
+        spacing: 4,
         children: indicators,
       ),
     );
