@@ -202,6 +202,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       widget.onComplete();
     } else {
       currentItemIndex++;
+      widget.onPageChanged.call(currentItemIndex);
       setState(() {
         _progress =
             0.0; // Reset progress value to 0 when the story automatically advances
@@ -219,6 +220,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       widget.onComplete();
     } else {
       currentItemIndex++;
+      widget.onPageChanged.call(currentItemIndex);
       _animationController!.dispose();
       setState(() {
         _progress = 0.0; // Reset progress value to 0 when tapping next
@@ -233,6 +235,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       // You can perform something here :)
     } else {
       currentItemIndex--;
+      widget.onPageChanged.call(currentItemIndex);
       _animationController!.dispose();
       setState(() {
         _progress = 0.0; // Reset progress value to 0 when tapping next
