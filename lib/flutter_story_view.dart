@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_story_view/models/story_item.dart';
-import 'package:flutter_story_view/models/user_info.dart';
 import 'package:flutter_story_view/widgets/story_image.dart';
 import 'package:flutter_story_view/widgets/story_indicator.dart';
 import 'package:flutter_story_view/widgets/story_video.dart';
@@ -24,24 +22,21 @@ import 'package:flutter_story_view/widgets/story_video.dart';
 /// while the `onPageChanged` callback is triggered every time the currently
 /// displayed item changes.
 
-/// [OnPageChanged] is called when a story item changes
-typedef OnPageChanged(int);
-
 class FlutterStoryView extends StatefulWidget {
   /// This Calls when story is completed
   final VoidCallback onComplete;
 
-  /// [OnPageChanged] is called when a story item changes
-  final OnPageChanged onPageChanged;
+  /// [ValueChanged] is called when a story item changes
+  final ValueChanged<int> onPageChanged;
 
   final VoidCallback? onMenuTapListener;
 
   final List<StoryItem> storyItems;
   // Optional caption for the story
-  final String? caption;
+  final Widget? caption;
 
-  /// User Info e.g username and profile image
-  final UserInfo? userInfo;
+  /// header for profile image
+  final Widget? header;
 
   /// Time when the story has been created
   final DateTime? createdAt;
@@ -80,7 +75,7 @@ class FlutterStoryView extends StatefulWidget {
     required this.onPageChanged,
     this.caption,
     this.onMenuTapListener,
-    this.userInfo,
+    this.header,
     this.createdAt,
     required this.storyItems,
     this.indicatorHeight,
@@ -132,7 +127,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
     /// Start playing the story by calling _playStory method
     _playStory(currentItemIndex);
     // Notify the onPageChanged callback about the current item index
-    widget.onPageChanged(currentItemIndex);
+    widget.onPageChanged.call(currentItemIndex);
   }
 
   // Start playing the story at the given index
@@ -218,7 +213,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       widget.onComplete();
     } else {
       currentItemIndex++;
-      widget.onPageChanged(currentItemIndex);
+      widget.onPageChanged.call(currentItemIndex);
       setState(() {
         _progress =
             0.0; // Reset progress value to 0 when the story automatically advances
@@ -236,7 +231,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       widget.onComplete();
     } else {
       currentItemIndex++;
-      widget.onPageChanged(currentItemIndex);
+      widget.onPageChanged.call(currentItemIndex);
       _animationController!.dispose();
       setState(() {
         _progress = 0.0; // Reset progress value to 0 when tapping next
@@ -251,7 +246,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       // You can perform something here :)
     } else {
       currentItemIndex--;
-      widget.onPageChanged(currentItemIndex);
+      widget.onPageChanged.call(currentItemIndex);
       _animationController!.dispose();
       setState(() {
         _progress = 0.0; // Reset progress value to 0 when tapping next
@@ -366,44 +361,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
                           Icons.arrow_back,
                         ),
                       ),
-                    if (widget.userInfo != null) ...[
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      if (widget.userInfo!.profileUrl != null)
-                        Container(
-                          width: 45,
-                          height: 45,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: CachedNetworkImage(
-                              imageUrl: widget.userInfo!.profileUrl!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (widget.userInfo!.username != null) ...[
-                              Text(
-                                widget.userInfo!.username!,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ] else
-                      Expanded(child: Container()),
+                    if (widget.header != null) widget.header!,
                     if (widget.createdAt != null)
                       Text(
                         DateFormat.jm().format(widget.createdAt!),
@@ -538,49 +496,16 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
             ],
           ),
         ),
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          opacity: widget.enableOnHoldHide == false
-              ? 1
-              : !_isPaused
-                  ? 1
-                  : 0,
-          child: Container(
-            height: 100,
-            width: double.infinity,
-            color: Colors.black,
-            padding: const EdgeInsets.only(top: 10),
-            child: Column(
-              children: [
-                if (currentItemIndex == 0)
-                  if (widget.caption != null)
-                    Expanded(
-                      child: Text(
-                        widget.caption!,
-                      ),
-                    ),
-                if (widget.showReplyButton != null &&
-                    widget.showReplyButton!) ...[
-                  InkWell(
-                    onTap: widget.onReplyTap,
-                    child: Column(
-                      children: [
-                        const Icon(Icons.keyboard_arrow_up),
-                        const SizedBox(
-                          height: 3,
-                        ),
-                        Text(widget.replyButtonText!),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                ]
-              ],
-            ),
+        if (widget.caption != null)
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: widget.enableOnHoldHide == false
+                ? 1
+                : !_isPaused
+                    ? 1
+                    : 0,
+            child: widget.caption,
           ),
-        ),
       ],
     );
   }
