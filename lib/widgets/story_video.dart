@@ -6,10 +6,10 @@ class StoryVideo extends StatefulWidget {
   final VideoPlayerController? controller;
 
   const StoryVideo({
-    Key? key,
+    super.key,
     required this.videoUrl,
     this.controller,
-  }) : super(key: key);
+  });
 
   factory StoryVideo.url(String url, VideoPlayerController? controller) {
     return StoryVideo(videoUrl: url, controller: controller);
@@ -22,20 +22,20 @@ class StoryVideo extends StatefulWidget {
 class _StoryVideoState extends State<StoryVideo> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (widget.controller != null &&
-              widget.controller!.value.isInitialized)
-            Center(
-              child: AspectRatio(
-                aspectRatio: widget.controller!.value.aspectRatio,
+    return Stack(
+      children: [
+        if (widget.controller != null && widget.controller!.value.isInitialized)
+          SizedBox.expand(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: widget.controller!.value.size.width,
+                height: widget.controller!.value.size.height,
                 child: VideoPlayer(widget.controller!),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
