@@ -24,6 +24,7 @@ class _StoryVideoState extends State<StoryVideo> {
   Widget build(BuildContext context) {
     return Container(
       child: Stack(
+        fit: StackFit.expand,
         children: [
           if (widget.controller != null &&
               widget.controller!.value.isInitialized)
